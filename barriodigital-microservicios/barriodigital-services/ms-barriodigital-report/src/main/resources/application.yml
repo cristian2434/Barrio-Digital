@@ -1,0 +1,40 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: ms-barriodigital-report
+
+  datasource:
+    # Para producción: reemplazar por el driver de Oracle y la URL de la BD cloud, ej:
+    # url: jdbc:oracle:thin:@//<host>:1521/<service_name>
+    # driver-class-name: oracle.jdbc.OracleDriver
+    #
+    # Mientras tanto usamos H2 en modo compatibilidad Oracle (MODE=Oracle):
+    # emula el dialecto SQL de Oracle, así el código JPA/Hibernate queda listo
+    # para portar a Oracle real sin cambios. jdbc:h2:file (no :mem) para que
+    # los datos persistan entre reinicios.
+    url: jdbc:h2:file:./data/reportdb;MODE=Oracle;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: report-service
+      auto-offset-reset: earliest
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

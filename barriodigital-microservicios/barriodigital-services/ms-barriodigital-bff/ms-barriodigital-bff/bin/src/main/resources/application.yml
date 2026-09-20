@@ -1,0 +1,34 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ms-barriodigital-bff
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # Tenant BarrioDigital (Azure AD / Entra ID)
+          issuer-uri: https://sts.windows.net/9a0d23e4-2666-4368-8276-585af06c280c/
+          # Client ID de la App Registration "BarrioDigital-API"
+          audiences: api://bc827a00-7a89-401e-9bb3-bb9636ffbb84
+
+# URLs internas de los microservicios de dominio.
+# Mientras no despliegues requests/catalog en otros puertos o contenedores,
+# usa localhost con distintos puertos (ver docker-compose más adelante).
+services:
+  requests-url: http://localhost:8081
+  catalog-url: http://localhost:8082
+  report-url: http://localhost:8083
+  audit-url: http://localhost:8084
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+logging:
+  level:
+    org.springframework.security: DEBUG

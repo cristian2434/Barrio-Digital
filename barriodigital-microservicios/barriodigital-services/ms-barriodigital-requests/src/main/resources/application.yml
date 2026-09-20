@@ -1,0 +1,58 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: ms-barriodigital-requests
+
+  datasource:
+    # H2 en memoria para desarrollo/pruebas locales.
+    # Para producción: reemplazar por el driver de Oracle y la URL de la BD cloud, ej:
+    # url: jdbc:oracle:thin:@//<host>:1521/<service_name>
+    # driver-class-name: oracle.jdbc.OracleDriver
+    #
+    # Mientras tanto usamos H2 en modo compatibilidad Oracle (MODE=Oracle):
+    # emula el dialecto SQL de Oracle (secuencias, fechas, funciones), así el
+    # código JPA/Hibernate queda listo para portar a Oracle real sin cambios.
+    # jdbc:h2:file (no :mem) para que los datos persistan entre reinicios.
+    url: jdbc:h2:file:./data/requestsdb;MODE=Oracle;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
+# URL interna de ms-barriodigital-catalog, para descontar cupo al admitir un trámite.
+catalog:
+  base-url: http://localhost:8082
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
